@@ -1,0 +1,70 @@
+# Enable Rewrite Engine
+RewriteEngine On
+
+# Set RewriteBase to project directory
+RewriteBase /SideKick/
+
+# Remove .php extension from URLs
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ $1.php [L]
+
+# Redirect www to non-www (optional, comment out if you prefer www)
+# RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+# RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+# Redirect HTTP to HTTPS (optional, enable only if you have SSL)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Disable directory listing
+Options -Indexes
+
+# Block access to hidden files
+RewriteRule "^\." - [F]
+
+# Block access to sensitive directories (but allow test for now)
+RewriteRule "^(config|includes|logs|database)/" - [F]
+
+# Set default character encoding
+AddDefaultCharset UTF-8
+
+# Set proper headers for security
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Set cache control headers for static files
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    
+    # CSS
+    ExpiresByType text/css "access plus 1 week"
+    
+    # JavaScript
+    ExpiresByType application/javascript "access plus 1 week"
+    
+    # HTML (don't cache aggressively)
+    ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# Prevent access to log files
+<FilesMatch "\.(log)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Prevent access to SQL files
+<FilesMatch "\.(sql|sql\.bak|sql\.backup)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
