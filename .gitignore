@@ -1,0 +1,59 @@
+# SideKick .gitignore
+
+# Dependencies
+vendor/
+node_modules/
+composer.lock
+package-lock.json
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+logs/
+*.log
+npm-debug.log
+yarn-error.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database backups
+database/backups/
+*.sql
+
+# Cache
+.cache/
+__pycache__/
+
+# Build outputs
+dist/
+build/
+out/
+
+# MacOS
+__MACOSX/
+
+# Session files
+session/
+
+# Uploads
+public/uploads/*
+!public/uploads/.gitkeep
