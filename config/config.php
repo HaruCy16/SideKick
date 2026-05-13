@@ -23,31 +23,37 @@ if (!is_dir($sessionPath)) {
     mkdir($sessionPath, 0755, true);
 }
 
-// Set session save path
-ini_set('session.save_path', $sessionPath);
+// Only configure session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    // Set session save path
+    ini_set('session.save_path', $sessionPath);
 
-// Session settings
-ini_set('session.gc_maxlifetime', SESSION_TIMEOUT * 60);
-ini_set('session.cookie_lifetime', SESSION_TIMEOUT * 60);
-session_name(SESSION_NAME);
+    // Session settings
+    ini_set('session.gc_maxlifetime', SESSION_TIMEOUT * 60);
+    ini_set('session.cookie_lifetime', SESSION_TIMEOUT * 60);
+    session_name(SESSION_NAME);
 
-// Configure session cookie security
-$sessionOptions = [
-    'lifetime' => SESSION_TIMEOUT * 60,
-    'path' => '/',
-    'domain' => '',
-    'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-    'httponly' => true,
-    'samesite' => 'Lax'  // Changed from Strict to Lax
-];
+    // Configure session cookie security
+    $sessionOptions = [
+        'lifetime' => SESSION_TIMEOUT * 60,
+        'path' => '/',
+        'domain' => '',
+        'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+        'httponly' => true,
+        'samesite' => 'Lax'  // Changed from Strict to Lax
+    ];
 
-// PHP 7.3+ session options
-if (PHP_VERSION_ID >= 70300) {
-    session_set_cookie_params($sessionOptions);
-} else {
-    // Fallback for older PHP versions
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 1 : 0);
+    // PHP 7.3+ session options
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params($sessionOptions);
+    } else {
+        // Fallback for older PHP versions
+        ini_set('session.cookie_httponly', 1);
+        ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 1 : 0);
+    }
+
+    // Start session
+    session_start();
 }
 
 // ===== PASSWORD REQUIREMENTS =====
