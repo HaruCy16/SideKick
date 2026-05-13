@@ -1,15 +1,15 @@
 <?php
 /**
  * User Logout Endpoint
- * POST /api/auth/logout
+ * GET /api/auth/logout (redirects to login page)
+ * POST /api/auth/logout (returns JSON response)
  * 
  * Destroys user session and logs out
  */
 
-// Headers
-header('Content-Type: application/json; charset=utf-8');
+// Headers for API requests
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 
 // Load configuration and helpers
 require_once __DIR__ . '/../../config/config.php';
@@ -23,8 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Only accept POST requests
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+// Handle both GET (from logout link) and POST (from API)
+if ($_SERVER['REQUEST_METHOD'] !== 'GET' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Content-Type: application/json; charset=utf-8');
     respond_json('error', 'Method not allowed', null, API_BAD_REQUEST);
 }
 
@@ -39,9 +40,25 @@ try {
     // Destroy session
     destroy_session();
     
+    // If GET request (from logout link), redirect to login page
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        header('Location: /SideKick/public/login.php');
+        exit;
+    }
+    
+    // If POST request, return JSON
+    header('Content-Type: application/json; charset=utf-8');
     respond_json('success', 'Logout successful. You have been logged out.', null, API_SUCCESS);
     
 } catch (Exception $e) {
     log_error("Logout error", ['error' => $e->getMessage()]);
+    
+    // Return JSON for API calls, redirect for browser links
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        header('Location: /SideKick/public/login.php');
+        exit;
+    }
+    
+    header('Content-Type: application/json; charset=utf-8');
     respond_json('error', 'Logout failed', null, API_SERVER_ERROR);
 }
