@@ -10,7 +10,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 /**
- * Check if user is authenticated
+ * Check if user is authenticated (API version - returns JSON)
+ * Used for API endpoints
  * @param string $requiredRole Optional required role
  * @return array|bool User data if authenticated, false otherwise
  */
@@ -50,6 +51,47 @@ if (!function_exists('require_auth')) {
                 'message' => 'Forbidden. Insufficient permissions.',
                 'timestamp' => date('c')
             ]);
+            exit;
+        }
+        
+        // Update session activity time
+        $_SESSION['last_activity'] = time();
+        
+        // Return user data
+        return [
+            'user_id' => $_SESSION['user_id'],
+            'email' => $_SESSION['email'] ?? null,
+            'role' => $_SESSION['user_role'],
+            'first_name' => $_SESSION['first_name'] ?? null,
+            'last_name' => $_SESSION['last_name'] ?? null,
+        ];
+    }
+}
+
+/**
+ * Check if user is authenticated (PAGE version - redirects)
+ * Used for HTML pages/dashboards
+ * @param string $requiredRole Optional required role
+ * @return array User data if authenticated
+ */
+if (!function_exists('require_auth_page')) {
+    function require_auth_page($requiredRole = null) {
+        // Check if user is logged in
+        if (empty($_SESSION['user_id']) || empty($_SESSION['user_role'])) {
+            header('Location: /SideKick/public/login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
+            exit;
+        }
+        
+        // Check if session has expired
+        if (!empty($_SESSION['session_created']) && (time() - $_SESSION['session_created']) > (SESSION_TIMEOUT * 60)) {
+            session_destroy();
+            header('Location: /SideKick/public/login.php?expired=1');
+            exit;
+        }
+        
+        // Check role requirement
+        if ($requiredRole !== null && $_SESSION['user_role'] !== $requiredRole) {
+            header('Location: /SideKick/public/login.php?forbidden=1');
             exit;
         }
         

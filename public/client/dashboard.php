@@ -3,7 +3,7 @@ require_once '../../config/config.php';
 require_once '../../includes/auth_guard.php';
 
 // Check authentication with role verification
-require_auth('client');
+$user = require_auth_page('client');
 ?>
 
 <!DOCTYPE html>
