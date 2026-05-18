@@ -202,7 +202,7 @@
         const loginForm = document.getElementById('loginForm');
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            alert('Login form submitted! (This is a demo)');
+            
         });
     </script>
 </body>
