@@ -279,11 +279,27 @@
 
         // Form Submit
         const registerForm = document.getElementById('registerForm');
-        registerForm.addEventListener('submit', (e) => {
+        const submitBtn = registerForm.querySelector('button[type="submit"]');
+        
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            // Get form values
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const role = document.getElementById('role').value;
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            // Validate required fields
+            if (!firstName || !lastName || !email || !role || !password) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
             // Validate passwords match
-            if (passwordInput.value !== confirmPasswordInput.value) {
+            if (password !== confirmPassword) {
                 alert('Passwords do not match!');
                 return;
             }
@@ -293,8 +309,46 @@
                 document.getElementById('termsError').classList.remove('hidden');
                 return;
             }
-
-            alert('Account created successfully! (This is a demo)');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Account...';
+            
+            try {
+                // Send registration request to API
+                const response = await fetch('/SideKick/api/auth/register.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        first_name: firstName,
+                        last_name: lastName,
+                        email: email,
+                        role: role,
+                        password: password,
+                        password_confirm: confirmPassword
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Registration successful - show message and redirect to login
+                    alert('Account created successfully! Redirecting to login...');
+                    window.location.href = '/SideKick/public/login.php';
+                } else {
+                    // Registration failed
+                    alert(data.message || 'Registration failed. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Create Account';
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('An error occurred. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
+            }
         });
 
         // Hide terms error when checkbox is checked
