@@ -1,6 +1,17 @@
 <?php
 require_once '../../config/config.php';
+require_once '../../config/db.php';
 require_once '../../includes/auth_guard.php';
+
+// Use PDO connection - access from globals if needed
+$db = $GLOBALS['pdo'] ?? null;
+
+// Verify database connection exists
+if (!$db) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit;
+}
 
 // Ensure user is authenticated
 if (!is_authenticated()) {

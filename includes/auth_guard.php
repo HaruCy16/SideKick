@@ -117,8 +117,8 @@ if (!function_exists('set_user_session')) {
         $_SESSION['user_id'] = $userData['user_id'] ?? null;
         $_SESSION['email'] = $userData['email'] ?? null;
         $_SESSION['user_role'] = $userData['role'] ?? null;
-        $_SESSION['first_name'] = $userData['first_name'] ?? null;
-        $_SESSION['last_name'] = $userData['last_name'] ?? null;
+        $_SESSION['user_first_name'] = $userData['first_name'] ?? null;
+        $_SESSION['user_last_name'] = $userData['last_name'] ?? null;
         $_SESSION['session_created'] = time();
         $_SESSION['last_activity'] = time();
         

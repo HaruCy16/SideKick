@@ -75,24 +75,43 @@ try {
         'user_id' => $user['user_id'],
         'email' => $user['email'],
         'role' => $user['role'],
-        'first_name' => $user['first_name'] ?? '',
-        'last_name' => $user['last_name'] ?? ''
+        'first_name' => 'User',
+        'last_name' => ''
     ]);
     
-    // Fetch profile data based on role
-    $profile_data = null;
+    // Fetch profile data based on role to get complete user info
+    $first_name = 'User';
+    $last_name = '';
+    
     if ($user['role'] === 'freelancer') {
-        $stmt = $pdo->prepare("SELECT * FROM freelancers WHERE user_id = ?");
+        $stmt = $pdo->prepare("SELECT first_name, last_name FROM freelancers WHERE user_id = ? LIMIT 1");
+        $stmt->execute([$user['user_id']]);
+        $profile = $stmt->fetch();
+        if ($profile) {
+            $first_name = $profile['first_name'];
+            $last_name = $profile['last_name'];
+        }
     } elseif ($user['role'] === 'client') {
-        $stmt = $pdo->prepare("SELECT * FROM client WHERE user_id = ?");
+        $stmt = $pdo->prepare("SELECT first_name, last_name FROM client WHERE user_id = ? LIMIT 1");
+        $stmt->execute([$user['user_id']]);
+        $profile = $stmt->fetch();
+        if ($profile) {
+            $first_name = $profile['first_name'];
+            $last_name = $profile['last_name'];
+        }
     } elseif ($user['role'] === 'manager') {
-        $stmt = $pdo->prepare("SELECT * FROM project_manager WHERE user_id = ?");
+        $stmt = $pdo->prepare("SELECT first_name, last_name FROM project_manager WHERE user_id = ? LIMIT 1");
+        $stmt->execute([$user['user_id']]);
+        $profile = $stmt->fetch();
+        if ($profile) {
+            $first_name = $profile['first_name'];
+            $last_name = $profile['last_name'];
+        }
     }
     
-    if ($profile_data === null && isset($stmt)) {
-        $stmt->execute([$user['user_id']]);
-        $profile_data = $stmt->fetch();
-    }
+    // Update session with complete name
+    $_SESSION['user_first_name'] = $first_name;
+    $_SESSION['user_last_name'] = $last_name;
     
     log_error("User login successful", ['user_id' => $user['user_id'], 'email' => $email, 'role' => $user['role']]);
     
@@ -100,8 +119,8 @@ try {
         'user_id' => $user['user_id'],
         'email' => $user['email'],
         'role' => $user['role'],
-        'first_name' => $profile_data['first_name'] ?? '',
-        'last_name' => $profile_data['last_name'] ?? '',
+        'first_name' => $first_name,
+        'last_name' => $last_name,
         'session_id' => session_id()
     ], API_SUCCESS);
     
