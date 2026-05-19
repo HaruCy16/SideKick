@@ -11,18 +11,29 @@ package-lock.json
 .env.local
 .env.*.local
 
+# Python
+.venv/
+venv/
+env/
+*.pyc
+*.pyo
+
 # OS files
 .DS_Store
 Thumbs.db
 *.swp
 *.swo
 *~
+.ftpconfig
+.ftpignore
 
 # IDE
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
+.eclipse
+.settings/
 
 # Logs
 logs/
@@ -42,18 +53,39 @@ database/backups/
 # Cache
 .cache/
 __pycache__/
+*.cache
 
 # Build outputs
 dist/
 build/
 out/
 
+# Compiled CSS (Tailwind output)
+css/output.css
+
 # MacOS
 __MACOSX/
 
 # Session files
-session/
+sessions/
+sess_*
+
+# Test files (sensitive - do not deploy)
+test/*.php
+test/*.py
+test/diagnostic*
+test/diagnostic.*
 
 # Uploads
 public/uploads/*
 !public/uploads/.gitkeep
+
+# OS-specific
+.AppleDouble
+.LSOverride
+*.DS_Store
+ehthumbs.db
+
+# Production files
+.env.production
+config/db.backup.php

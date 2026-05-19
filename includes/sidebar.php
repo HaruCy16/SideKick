@@ -30,20 +30,22 @@ $items = [
 ];
 
 // Helper function to get Font Awesome icon
-function get_icon($icon_name) {
-    $icons = [
-        'chart-pie' => 'fas fa-chart-pie',
-        'briefcase' => 'fas fa-briefcase',
-        'document' => 'fas fa-file-lines',
-        'clipboard-list' => 'fas fa-list-check',
-        'chart-bar' => 'fas fa-chart-bar',
-        'users' => 'fas fa-users',
-        'cog' => 'fas fa-cog',
-        'dashboard' => 'fas fa-gauge',
-        'tasks' => 'fas fa-tasks',
-        'analytics' => 'fas fa-chart-line',
-    ];
-    return $icons[$icon_name] ?? 'fas fa-gauge';
+if (!function_exists('get_icon')) {
+    function get_icon($icon_name) {
+        $icons = [
+            'chart-pie' => 'fas fa-chart-pie',
+            'briefcase' => 'fas fa-briefcase',
+            'document' => 'fas fa-file-lines',
+            'clipboard-list' => 'fas fa-list-check',
+            'chart-bar' => 'fas fa-chart-bar',
+            'users' => 'fas fa-users',
+            'cog' => 'fas fa-cog',
+            'dashboard' => 'fas fa-gauge',
+            'tasks' => 'fas fa-tasks',
+            'analytics' => 'fas fa-chart-line',
+        ];
+        return $icons[$icon_name] ?? 'fas fa-gauge';
+    }
 }
 ?>
 
@@ -54,7 +56,7 @@ function get_icon($icon_name) {
 </button>
 
 <!-- Sidebar -->
-<aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 transform -translate-x-full sm:translate-x-0 transition-transform transition-all sm:transition-none">
+<aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 transform -translate-x-full sm:translate-x-0 transition-all sm:transition-none">
     <!-- Sidebar Header with Logo -->
     <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
         <div class="flex items-center gap-2">
@@ -68,7 +70,7 @@ function get_icon($icon_name) {
         <ul class="space-y-2">
             <?php foreach ($items as $item): ?>
                 <li>
-                    <a href="<?php echo htmlspecialchars($item['url']); ?>" class="flex items-center px-4 py-2.5 text-slate-700 dark:text-slate-300 rounded-lg transition-colors <?php echo ($page === $item['key']) ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'hover:bg-slate-100 dark:hover:bg-slate-700'; ?>">
+                    <a href="<?php echo htmlspecialchars($item['url']); ?>" class="flex items-center px-4 py-2.5 rounded-lg transition-colors <?php echo ($page === $item['key']) ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'; ?>">
                         <i class="<?php echo get_icon($item['icon']); ?> w-5 text-slate-500 dark:text-slate-400 <?php echo ($page === $item['key']) ? 'text-blue-600 dark:text-blue-400' : ''; ?>"></i>
                         <span class="ms-3 font-medium"><?php echo htmlspecialchars($item['label']); ?></span>
                     </a>
@@ -93,7 +95,7 @@ function get_icon($icon_name) {
                     <?php echo htmlspecialchars(($_SESSION['user_first_name'] ?? 'User') . ' ' . ($_SESSION['user_last_name'] ?? 'Account')); ?>
                 </p>
                 <p class="text-xs text-slate-600 dark:text-slate-400 truncate">
-                    <?php echo htmlspecialchars($_SESSION['user_email'] ?? 'user@example.com'); ?>
+                    <?php echo htmlspecialchars($_SESSION['email'] ?? 'user@example.com'); ?>
                 </p>
             </div>
         </div>

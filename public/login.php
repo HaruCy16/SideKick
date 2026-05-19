@@ -199,10 +199,56 @@
         }
 
         // Form Submit
-        const loginForm = document.getElementById('loginForm');
-        loginForm.addEventListener('submit', (e) => {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Login form submitted! (This is a demo)');
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('passwordInput').value;
+            const submitBtn = document.querySelector('button[type="submit"]');
+            
+            if (!email || !password) {
+                alert('Please enter both email and password');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing In...';
+            
+            try {
+                const response = await fetch('/SideKick/api/auth/login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const role = data.data.role;
+                    const dashboards = {
+                        'admin': '/SideKick/public/admin/dashboard.php',
+                        'manager': '/SideKick/public/project_manager/dashboard.php',
+                        'freelancer': '/SideKick/public/freelancer/dashboard.php',
+                        'client': '/SideKick/public/client/dashboard.php'
+                    };
+                    const dashboard = dashboards[role] || '/SideKick/public/dashboard.php';
+                    window.location.href = dashboard;
+                } else {
+                    alert(data.message || 'Login failed. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Sign In';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('An error occurred. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign In';
+            }
         });
     </script>
 </body>

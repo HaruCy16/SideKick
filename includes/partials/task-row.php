@@ -33,6 +33,10 @@ $style = $priority_styles[$priority] ?? $priority_styles['Medium'];
         <?php echo htmlspecialchars($priority); ?>
     </span>
     <span class="text-sm text-gray-600 w-20 text-right">
-        <?php echo htmlspecialchars($due_date); ?>
+        <?php 
+            // Handle DateTime objects or string dates
+            $date_str = ($due_date instanceof DateTime) ? $due_date->format('M d') : (string)$due_date;
+            echo htmlspecialchars($date_str); 
+        ?>
     </span>
 </div>
