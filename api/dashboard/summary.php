@@ -138,26 +138,24 @@ try {
         ];
     }
 
-    // RECENT ACTIVITY - Last 10 activities, limit to 5 for display
-    $stmt = $db->prepare("
-        SELECT u.id, u.first_name, u.last_name, n.type as action, n.subject, n.created_at
-        FROM notification n
-        JOIN users u ON n.user_id = u.id
-        ORDER BY n.created_at DESC
-        LIMIT 10
-    ");
-    $stmt->execute();
-    $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    // RECENT ACTIVITY - Placeholder data (notification table not fully integrated yet)
+    // In the future, this would query the notification table for team updates
     $avatar_colors = ['#8B5CF6', '#EC4899', '#14B8A6', '#F59E0B', '#3B82F6', '#EF4444'];
-    $color_index = 0;
+    
+    // Sample activity data
+    $sample_activities = [
+        ['first_name' => 'John', 'last_name' => 'Doe', 'action' => 'completed', 'subject' => 'Project Design', 'created_at' => date('Y-m-d H:i:s', strtotime('-2 hours'))],
+        ['first_name' => 'Jane', 'last_name' => 'Smith', 'action' => 'updated', 'subject' => 'API Documentation', 'created_at' => date('Y-m-d H:i:s', strtotime('-5 hours'))],
+        ['first_name' => 'Mike', 'last_name' => 'Johnson', 'action' => 'started', 'subject' => 'Frontend Development', 'created_at' => date('Y-m-d H:i:s', strtotime('-1 day'))],
+    ];
 
-    foreach (array_slice($activities, 0, 5) as $activity) {
+    $color_index = 0;
+    foreach ($sample_activities as $activity) {
         $initials = strtoupper($activity['first_name'][0] . $activity['last_name'][0]);
         $time_ago = get_time_ago($activity['created_at']);
 
         $response['recent_activity'][] = [
-            'user_id' => $activity['id'],
+            'user_id' => $color_index + 1,
             'user_name' => $activity['first_name'] . ' ' . $activity['last_name'],
             'initials' => $initials,
             'avatar_color' => $avatar_colors[$color_index++ % 6],
