@@ -17,6 +17,11 @@ if (session_status() === PHP_SESSION_NONE) {
  */
 if (!function_exists('require_auth')) {
     function require_auth($requiredRole = null) {
+        // Ensure session is started
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         // Check if user is logged in
         if (empty($_SESSION['user_id']) || empty($_SESSION['user_role'])) {
             http_response_code(401);
@@ -29,8 +34,12 @@ if (!function_exists('require_auth')) {
             exit;
         }
         
-        // Check if session has expired
-        if (!empty($_SESSION['session_created']) && (time() - $_SESSION['session_created']) > (SESSION_TIMEOUT * 60)) {
+        // Check if session has expired (use last_activity instead of session_created)
+        $currentTime = time();
+        $lastActivity = $_SESSION['last_activity'] ?? $_SESSION['session_created'] ?? $currentTime;
+        $timeoutSeconds = SESSION_TIMEOUT * 60;
+        
+        if (($currentTime - $lastActivity) > $timeoutSeconds) {
             session_destroy();
             http_response_code(401);
             header('Content-Type: application/json');
@@ -54,7 +63,7 @@ if (!function_exists('require_auth')) {
             exit;
         }
         
-        // Update session activity time
+        // Update session activity time to keep session alive
         $_SESSION['last_activity'] = time();
         
         // Return user data
@@ -62,8 +71,8 @@ if (!function_exists('require_auth')) {
             'user_id' => $_SESSION['user_id'],
             'email' => $_SESSION['email'] ?? null,
             'role' => $_SESSION['user_role'],
-            'first_name' => $_SESSION['first_name'] ?? null,
-            'last_name' => $_SESSION['last_name'] ?? null,
+            'first_name' => $_SESSION['user_first_name'] ?? null,
+            'last_name' => $_SESSION['user_last_name'] ?? null,
         ];
     }
 }
@@ -76,14 +85,23 @@ if (!function_exists('require_auth')) {
  */
 if (!function_exists('require_auth_page')) {
     function require_auth_page($requiredRole = null) {
+        // Ensure session is started
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         // Check if user is logged in
         if (empty($_SESSION['user_id']) || empty($_SESSION['user_role'])) {
             header('Location: /SideKick/public/login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
             exit;
         }
         
-        // Check if session has expired
-        if (!empty($_SESSION['session_created']) && (time() - $_SESSION['session_created']) > (SESSION_TIMEOUT * 60)) {
+        // Check if session has expired (use last_activity instead of session_created)
+        $currentTime = time();
+        $lastActivity = $_SESSION['last_activity'] ?? $_SESSION['session_created'] ?? $currentTime;
+        $timeoutSeconds = SESSION_TIMEOUT * 60;
+        
+        if (($currentTime - $lastActivity) > $timeoutSeconds) {
             session_destroy();
             header('Location: /SideKick/public/login.php?expired=1');
             exit;
@@ -95,7 +113,7 @@ if (!function_exists('require_auth_page')) {
             exit;
         }
         
-        // Update session activity time
+        // Update session activity time to keep session alive
         $_SESSION['last_activity'] = time();
         
         // Return user data
@@ -103,8 +121,8 @@ if (!function_exists('require_auth_page')) {
             'user_id' => $_SESSION['user_id'],
             'email' => $_SESSION['email'] ?? null,
             'role' => $_SESSION['user_role'],
-            'first_name' => $_SESSION['first_name'] ?? null,
-            'last_name' => $_SESSION['last_name'] ?? null,
+            'first_name' => $_SESSION['user_first_name'] ?? null,
+            'last_name' => $_SESSION['user_last_name'] ?? null,
         ];
     }
 }

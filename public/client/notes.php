@@ -18,7 +18,7 @@ $role = $_SESSION['user_role'] ?? 'client';
 body{background:#f1f5f9}
 .dark body{background:#0f172a}
 .page-wrapper{display:flex;min-height:100vh}
-.main-area{margin-left:256px;flex:1;display:flex;flex-direction:column;margin-top:64px}
+.main-area{margin-left:0;flex:1;display:flex;flex-direction:column;margin-top:64px;padding-top:16px}
 
 .notes-layout{display:grid;grid-template-columns:320px 1fr;height:calc(100vh - 64px);overflow:hidden}
 .notes-sidebar{border-right:1px solid #e2e8f0;background:#fff;display:flex;flex-direction:column;overflow:hidden}
@@ -97,10 +97,10 @@ body{background:#f1f5f9}
 <body>
 <div class="page-wrapper">
 
-<?php $current_role=$role; $current_page='notes'; include '../../includes/sidebar.php'; ?>
+<?php $current_role=$role; $current_page='notes'; require_once '../../includes/sidebar.php'; ?>
 
 <div class="main-area">
-<?php include '../../includes/partials/topbar.php'; ?>
+<?php require_once '../../includes/partials/topbar.php'; ?>
 
 <div class="notes-layout">
 
@@ -331,3 +331,5 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 </body>
 </html>
+
+

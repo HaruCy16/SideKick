@@ -30,20 +30,22 @@ $items = [
 ];
 
 // Helper function to get Font Awesome icon
-function get_icon($icon_name) {
-    $icons = [
-        'chart-pie' => 'fas fa-chart-pie',
-        'briefcase' => 'fas fa-briefcase',
-        'document' => 'fas fa-file-lines',
-        'clipboard-list' => 'fas fa-list-check',
-        'chart-bar' => 'fas fa-chart-bar',
-        'users' => 'fas fa-users',
-        'cog' => 'fas fa-cog',
-        'dashboard' => 'fas fa-gauge',
-        'tasks' => 'fas fa-tasks',
-        'analytics' => 'fas fa-chart-line',
-    ];
-    return $icons[$icon_name] ?? 'fas fa-gauge';
+if (!function_exists('get_icon')) {
+    function get_icon($icon_name) {
+        $icons = [
+            'chart-pie' => 'fas fa-chart-pie',
+            'briefcase' => 'fas fa-briefcase',
+            'document' => 'fas fa-file-lines',
+            'clipboard-list' => 'fas fa-list-check',
+            'chart-bar' => 'fas fa-chart-bar',
+            'users' => 'fas fa-users',
+            'cog' => 'fas fa-cog',
+            'dashboard' => 'fas fa-gauge',
+            'tasks' => 'fas fa-tasks',
+            'analytics' => 'fas fa-chart-line',
+        ];
+        return $icons[$icon_name] ?? 'fas fa-gauge';
+    }
 }
 ?>
 
@@ -93,7 +95,7 @@ function get_icon($icon_name) {
                     <?php echo htmlspecialchars(($_SESSION['user_first_name'] ?? 'User') . ' ' . ($_SESSION['user_last_name'] ?? 'Account')); ?>
                 </p>
                 <p class="text-xs text-slate-600 dark:text-slate-400 truncate">
-                    <?php echo htmlspecialchars($_SESSION['user_email'] ?? 'user@example.com'); ?>
+                    <?php echo htmlspecialchars($_SESSION['email'] ?? 'user@example.com'); ?>
                 </p>
             </div>
         </div>
