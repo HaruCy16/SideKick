@@ -60,19 +60,3 @@ $user_initials = strtoupper(($_SESSION['user_first_name'][0] ?? 'U') . ($_SESSIO
         </button>
     </div>
 </nav>
-
-<script>
-    // Theme Toggle
-    const themeToggle = document.getElementById('themeToggle');
-    const savedTheme = localStorage.getItem('sidekick_theme') || 'light';
-
-    if (savedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-    }
-
-    themeToggle?.addEventListener('click', () => {
-        document.documentElement.classList.toggle('dark');
-        const isDark = document.documentElement.classList.contains('dark');
-        localStorage.setItem('sidekick_theme', isDark ? 'dark' : 'light');
-    });
-</script>

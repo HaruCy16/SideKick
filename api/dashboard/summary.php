@@ -168,12 +168,21 @@ try {
     http_response_code(200);
     echo json_encode($response);
 
-} catch (Exception $e) {
+} catch (PDOException $e) {
+    error_log("Dashboard Summary Error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,
         'message' => 'Error fetching dashboard data',
-        'error' => DEBUG_MODE ? $e->getMessage() : null
+        'error' => defined('DEBUG_MODE') && DEBUG_MODE ? $e->getMessage() : null
+    ]);
+} catch (Exception $e) {
+    error_log("Dashboard Summary Error: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error fetching dashboard data',
+        'error' => defined('DEBUG_MODE') && DEBUG_MODE ? $e->getMessage() : null
     ]);
 }
 
