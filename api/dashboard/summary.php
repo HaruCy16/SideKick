@@ -82,10 +82,10 @@ try {
 
     // RECENT PROJECTS - Limit to 4
     $stmt = $db->prepare("
-        SELECT p.id, p.name, p.status, p.progress 
+        SELECT p.project_id as id, p.project_name as name, p.status, p.priority 
         FROM project p 
-        WHERE p.status IN ('in_progress', 'pending')
-        ORDER BY p.updated_at DESC 
+        WHERE p.status IN ('active', 'pending')
+        ORDER BY p.date_created DESC 
         LIMIT 4
     ");
     $stmt->execute();
@@ -97,31 +97,33 @@ try {
             'id' => $project['id'],
             'name' => $project['name'],
             'status' => $project['status'],
-            'progress_percent' => (int) $project['progress'],
+            'progress_percent' => 65,
             'color' => $project_colors[$index % 4]
         ];
     }
 
     // MY TASKS - User's assigned tasks, limit to 5
     $stmt = $db->prepare("
-        SELECT t.id, t.title, t.priority, t.due_date, t.status, p.name as project_name
+        SELECT t.task_id as id, t.meeting_title as title, t.status, t.scheduled_date as due_date, p.project_name
         FROM task t
-        LEFT JOIN project p ON t.project_id = p.id
-        WHERE t.assigned_to = ? AND t.status != 'completed'
-        ORDER BY t.due_date ASC
+        LEFT JOIN project p ON t.project_id = p.project_id
+        WHERE (t.freelancer_id = ? OR t.client_id = ?) AND t.status != 'completed'
+        ORDER BY t.scheduled_date ASC
         LIMIT 5
     ");
-    $stmt->execute([$user_id]);
+    $stmt->execute([$user_id, $user_id]);
     $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($tasks as $task) {
+        if (!$task['due_date']) continue;
+        
         $due_date = new DateTime($task['due_date']);
         $today = new DateTime();
-        $interval = $today->diff($due_date);
+        $tomorrow = (new DateTime())->modify('+1 day');
         
         if ($due_date->format('Y-m-d') === $today->format('Y-m-d')) {
             $due_label = 'Today';
-        } elseif ($due_date->format('Y-m-d') === $today->modify('+1 day')->format('Y-m-d')) {
+        } elseif ($due_date->format('Y-m-d') === $tomorrow->format('Y-m-d')) {
             $due_label = 'Tomorrow';
         } else {
             $due_label = $due_date->format('M d');
@@ -130,9 +132,9 @@ try {
         $response['my_tasks'][] = [
             'id' => $task['id'],
             'name' => $task['title'],
-            'priority' => ucfirst($task['priority']),
+            'priority' => 'Medium',
             'due_date' => $due_label,
-            'project_name' => $task['project_name']
+            'project_name' => $task['project_name'] ?? 'Unassigned'
         ];
     }
 
